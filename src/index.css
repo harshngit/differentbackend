@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "GilroyBold";
+  src: local("GilroyBold"),
+    url("./webfonts/Gilroy-Bold.ttf") format("truetype");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "GilroyRegular";
+  src: local("GilroyRegular"),
+    url("./webfonts/Gilroy-Regular.ttf") format("truetype");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "GilroyMedium";
+  src: local("GilroyMedium"),
+    url("./webfonts/Gilroy-Medium.ttf") format("truetype");
+  font-weight: bold;
+}
+
+body::-webkit-scrollbar {
+  width: .6em;
+}
+
+body::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 8px rgb(237, 237, 237);
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: rgb(201, 201, 201);
+  outline: 1px solid rgb(201, 201, 201);
+  border-radius: 0px;
+
+}
+
+div::-webkit-scrollbar {
+  width: .5em;
+  padding: 5px 5px;
+
+}
+
+div::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 8px rgb(237, 237, 237);
+  padding: 5px 5px;
+}
+
+div::-webkit-scrollbar-thumb {
+  background-color: rgb(201, 201, 201);
+  outline: 1px solid rgb(201, 201, 201);
+  border-radius: 0px;
+
+}
