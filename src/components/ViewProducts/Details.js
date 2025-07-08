@@ -20,6 +20,7 @@ const Details = ({ productDetails }) => {
 		productMaterial,
 		productDeliveryPayment,
 		productDescription,
+		productColor,
 	} = productDetails || {};
 
 	const data = [
@@ -84,7 +85,7 @@ const Details = ({ productDetails }) => {
 					</div>
 				</div>
 			</div>
-			<div className="w-6 h-6 rounded-full border" style={{ backgroundColor: pr }}></div>
+			<div className="w-6 h-6 rounded-full border" style={{ backgroundColor: productColor }}></div>
 
 			{/* Accordion Section */}
 			<div className="w-full mx-auto divide-y divide-gray-200">
