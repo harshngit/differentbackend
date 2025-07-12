@@ -122,7 +122,7 @@ const ProductForm = ({
 							value={sizeInput}
 							label="Size"
 							onChange={(e) => setSizeInput(e.target.value)}
-							className="border border-gray-300 rounded px-3 py-1 !w-[90%]"
+							className="border border-gray-300 rounded px-3 py-1"
 							placeholder="e.g. M or 38"
 						/>
 						<Button

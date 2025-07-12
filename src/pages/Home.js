@@ -1,180 +1,166 @@
-import React, { useEffect, useState } from 'react'
-import Topbar from '../components/Layout/Topbar'
-import { Sidebar } from '../components/Layout/Sidebar'
-import { Button } from '@material-tailwind/react'
-import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import AnalysisBox from '../components/Home/AnalysisBox'
-import { collection, getDocs, orderBy, query, where } from 'firebase/firestore'
-import { db } from '../firebase.config'
-import Charts from '../components/Home/Charts'
-import HomeList from '../components/Home/HomeList'
-import { TbHandClick, TbTruckDelivery } from "react-icons/tb";
-import { FaBox } from 'react-icons/fa'
-import { RiTakeawayFill } from 'react-icons/ri'
+import React, { useEffect, useState } from 'react';
+import Topbar from '../components/Layout/Topbar';
+import { Sidebar } from '../components/Layout/Sidebar';
+import { useSelector } from 'react-redux';
+import AnalysisBox from '../components/Home/AnalysisBox';
+import Charts from '../components/Home/Charts'; // You can use this for both or split if needed
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../firebase.config';
+import { format } from 'date-fns';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
-  const { isAuthenticated, users, userProfile } = useSelector(
-    (state) => state.user
-  )
-  // const [totalOrderList, setTotalOrderList] = useState([])
-  // const [orderInTransitList, setOrderInTransitList] = useState([])
-  // const [orderDeliveryList, setOrderDeliveryList] = useState([])
+  const { isAuthenticated, users, userProfile } = useSelector((state) => state.user);
 
-  // const fetchOrderList = async () => {
-  //   const q = query(collection(db, "logisticOrder"));
-  //   const querySnapshot = await getDocs(q);
-  //   querySnapshot.forEach((doc) => {
-  //     setTotalOrderList((prev) => [...prev, {
-  //       id: doc.id,
-  //       ...doc.data()
-  //     }])
-  //   })
-  // }
-  // const fetchOrderListCLient = async () => {
-  //   const q = query(collection(db, "logisticOrder"), where("userName", "==", userProfile?.companyName));
-  //   const querySnapshot = await getDocs(q);
-  //   querySnapshot.forEach((doc) => {
-  //     setTotalOrderList((prev) => [...prev, {
-  //       id: doc.id,
-  //       ...doc.data()
-  //     }])
-  //   })
-  // }
-  // const fetchOrderinTransitList = async () => {
-  //   const q = query(collection(db, "logisticOrder"), where("orderStatus", "==", "in-transit"));
-  //   const querySnapshot = await getDocs(q);
-  //   querySnapshot.forEach((doc) => {
-  //     setOrderInTransitList((prev) => [...prev, {
-  //       id: doc.id,
-  //       ...doc.data()
-  //     }])
-  //   })
-  // }
-  // const fetchOrderinTransitListClient = async () => {
-  //   const q = query(collection(db, "logisticOrder"), where("orderStatus", "==", "in-transit"), where("userName", "==", userProfile?.companyName));
-  //   const querySnapshot = await getDocs(q);
-  //   querySnapshot.forEach((doc) => {
-  //     setOrderInTransitList((prev) => [...prev, {
-  //       id: doc.id,
-  //       ...doc.data()
-  //     }])
-  //   })
-  // }
-  // const fetchOrderDilveryList = async () => {
-  //   const q = query(collection(db, "logisticOrder"), where("orderStatus", "==", "delivered"));
-  //   const querySnapshot = await getDocs(q);
-  //   querySnapshot.forEach((doc) => {
-  //     setOrderDeliveryList((prev) => [...prev, {
-  //       id: doc.id,
-  //       ...doc.data()
-  //     }])
-  //   })
-  // }
+  const [totalOrderList, setTotalOrderList] = useState([]);
+  const [orderInTransitList, setOrderInTransitList] = useState([]);
+  const [newOrderlist, setNewOrderlist] = useState([]);
+  const [fulfilledList, setfulfilledList] = useState([]);
+  const [orderDeliveryList, setOrderDeliveryList] = useState([]);
+  const [dailySalesData, setDailySalesData] = useState({});
 
-  // const fetchOrderDilveryListclient = async () => {
-  //   const q = query(collection(db, "logisticOrder"), where("orderStatus", "==", "delivered"), where("userName", "==", userProfile?.companyName));
-  //   const querySnapshot = await getDocs(q);
-  //   querySnapshot.forEach((doc) => {
-  //     setOrderDeliveryList((prev) => [...prev, {
-  //       id: doc.id,
-  //       ...doc.data()
-  //     }])
-  //   })
-  // }
+  const fetchOrderList = async () => {
+    const q = query(collection(db, "Order"));
+    const querySnapshot = await getDocs(q);
 
-  // const chartData = {
-  //   labels: ["Total Orders", "In Transit", "Delivered"],
-  //   datasets: [
-  //     {
-  //       label: "Orders",
-  //       data: [totalOrderList.length, orderInTransitList.length, orderDeliveryList.length],
-  //       backgroundColor: [
-  //         "#5ec6d1", // Blue
-  //         "rgba(250, 192, 19, 0.8)", // Yellow
-  //         "#ee3135", // Red
-  //       ],
-  //       borderColor: [
-  //         "#5ec6d1",
-  //         "rgba(250, 192, 19, 1)",
-  //         "#ee3135",
-  //       ],
-  //       borderWidth: 1,
-  //     },
-  //   ],
-  // };
+    const orderCountsByDate = {};
+    const orders = [];
 
-  // useEffect(() => {
-  //   if (userProfile?.role === "admin") {
-  //     fetchOrderList()
-  //     fetchOrderinTransitList()
-  //     fetchOrderDilveryList()
-  //   } else {
-  //     fetchOrderDilveryListclient()
-  //     fetchOrderListCLient()
-  //     fetchOrderinTransitListClient()
-  //   }
-  // }, [userProfile])
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const createdAt = data.createdAt?.toDate?.();
+      if (!createdAt) return;
 
+      const dateKey = format(createdAt, "MMM d");
+      orderCountsByDate[dateKey] = (orderCountsByDate[dateKey] || 0) + 1;
 
+      orders.push({ id: doc.id, ...data });
+    });
+
+    setTotalOrderList(orders);
+    setDailySalesData(orderCountsByDate);
+  };
+
+  const fetchOrderinTransitList = async () => {
+    const q = query(collection(db, "Order"), where("orderStatus", "==", "in-transit"));
+    const querySnapshot = await getDocs(q);
+    const result = [];
+    querySnapshot.forEach((doc) => result.push({ id: doc.id, ...doc.data() }));
+    setOrderInTransitList(result);
+  };
+
+  const fetchOrderDilveryList = async () => {
+    const q = query(collection(db, "logisticOrder"), where("orderStatus", "==", "delivered"));
+    const querySnapshot = await getDocs(q);
+    const result = [];
+    querySnapshot.forEach((doc) => result.push({ id: doc.id, ...doc.data() }));
+    setOrderDeliveryList(result);
+  };
+
+  const fetchNewOrder = async () => {
+    const q = query(collection(db, "Order"), where("orderStatus", "==", "New"));
+    const querySnapshot = await getDocs(q);
+    const result = [];
+    querySnapshot.forEach((doc) => result.push({ id: doc.id, ...doc.data() }));
+    setNewOrderlist(result);
+  };
+
+  const fetchfulfilledOrder = async () => {
+    const q = query(collection(db, "Order"), where("orderStatus", "==", "FulFilled"));
+    const querySnapshot = await getDocs(q);
+    const result = [];
+    querySnapshot.forEach((doc) => result.push({ id: doc.id, ...doc.data() }));
+    setfulfilledList(result);
+  };
+
+  useEffect(() => {
+    fetchOrderList();
+    fetchOrderinTransitList();
+    fetchOrderDilveryList();
+    fetchNewOrder();
+    fetchfulfilledOrder();
+  }, []);
+
+  const dailySalesChartData = {
+    labels: Object.keys(dailySalesData),
+    datasets: [
+      {
+        label: 'Daily Sales',
+        data: Object.values(dailySalesData),
+        fill: false,
+        tension: 0.3,
+        borderColor: '#000',
+        backgroundColor: '#ccc',
+        pointRadius: 5,
+      },
+    ],
+  };
+
+  const orderDistributionChartData = {
+    labels: ["Total Orders", "In Transit", "Delivered"],
+    datasets: [
+      {
+        label: 'Order Distribution',
+        data: [totalOrderList.length, orderInTransitList.length, orderDeliveryList.length],
+        backgroundColor: ['#000000', '#ccc', '#808080'],
+        borderColor: ['#000000', '#ccc', '#808080'],
+        borderWidth: 1,
+      },
+    ],
+  };
 
   return (
-    <div className='bg-gray-100 flex '>
-      {userProfile?.role !== "Delivery Boy" && <Sidebar />}
-      {userProfile?.role !== "Delivery Boy" && <div className='h-[100vh] overflow-y-scroll flex flex-1 flex-col ' >
+    <div className='bg-gray-100 flex h-[100vh] overflow-y-scroll'>
+      <Sidebar />
+      <div className='flex flex-1 flex-col'>
         <Topbar />
-        {/* <AnalysisBox totalOrderList={totalOrderList} orderInTransitList={orderInTransitList} orderDeliveryList={orderDeliveryList} />
-        <div className='grid grid-cols-12 gap-10'>
-          <div className='col-span-5'><Charts chartData={chartData} /></div>
-          <div className='col-span-7'><HomeList userProfile={userProfile} totalOrderList={totalOrderList} /></div>
-        </div> */}
-        {/* <div className='col-span-4  flex-col  gap-6 flex items-center justify-center' >
-          <h3 className='text-[1.5rem] font-[GilroyBold]'>Welcome to GRC Express and Logistics</h3>
-          {userProfile?.role === "Delivery Boy" && <Link to="/create-order" >  <Button>Create New Order</Button></Link>}
-          {userProfile?.role !== "Delivery Boy" && <Link to="/orders" >  <Button>Order List</Button></Link>}
-        </div> */}
-      </div>}
-      {userProfile?.role === "Delivery Boy" &&
-        <div className=' h-[100vh] overflow-y-scroll flex flex-1 flex-col ' >
-          <div className='col-span-4  flex-col mt-10  gap-6 flex items-center justify-center' >
-            <h3 className='lg:text-[1.5rem] text-[1.3rem] text-center font-[GilroyBold]'>Welcome to GRC Express and Logistics</h3>
-            <div className='grid lg:grid-cols-3 grid-cols-1 gap-10 m-10'>
-              <Link to="/createDelivery">
-                <div className='bg-white shadow-lg rounded-lg py-3 px-6 flex items-center justify-center flex-col'>
-                  <div className='flex justify-between items-center gap-5'>
-                    <h3 className='text-[1.3rem] font-[GilroyBold]'>Create Order</h3>
-                    <div className=' w-[70px] h-[70px] rounded-full text-center  flex justify-center items-center bg-[#fceac1]'>
-                      <FaBox className='text-[#FFB200] text-[40px]' />
-                    </div>
-                  </div>
-                </div>
-              </Link>
-              <Link to="/deliveryList">
-                <div className='bg-white shadow-lg rounded-lg py-3 px-6 flex items-center justify-center flex-col'>
-                  <div className='flex justify-between items-center gap-5'>
-                    <h3 className='text-[1.3rem] font-[GilroyBold]'>Delivery List</h3>
-                    <div className=' w-[70px] h-[70px] rounded-full text-center  flex justify-center items-center bg-[#fceac1]'>
-                      <TbTruckDelivery className='text-[#FFB200] text-[40px]' />
-                    </div>
-                  </div>
-                </div>
-              </Link>
-              <Link to="/pickupList">
-                <div className='bg-white shadow-lg rounded-lg py-3 px-6 flex items-center justify-center flex-col'>
-                  <div className='flex justify-between items-center gap-5'>
-                    <h3 className='text-[1.3rem] font-[GilroyBold]'>Pickup List</h3>
-                    <div className=' w-[70px] h-[70px] rounded-full text-center  flex justify-center items-center bg-[#fceac1]'>
-                      <RiTakeawayFill className='text-[#FFB200] text-[40px]' />
-                    </div>
-                  </div>
-                </div>
-              </Link>
+        <div className='px-[1%] pt-[5%] pb-[5%] rounded-lg shadow-md m-5 w-[96%] text-white bg-gradient-to-r from-black via-gray-800 to-gray-500'>
+          <div className='flex flex-col justify-start items-start'>
+            {/* Title */}
+            <div className='ml-10 mt-5 font-semibold font-[GilroyBold] text-xl'>
+              Welcome To Different Clothing Dashboard
             </div>
+
+            {/* Description */}
+            <p className='ml-10 mt-2 w-[50%] text-md font-[GilroyMedium]'>
+              Manage your orders seamlessly, track delivery status, and create new orders with ease.
+              Stay updated with real-time data and ensure smooth operations for your clothing business.
+            </p>
+
+            {/* Button to Create Order */}
+            <Link to={"/create-product"}>
+              <button className='ml-10 mt-4 px-6 py-2 bg-white text-black font-bold rounded-md hover:bg-gray-200 transition-all'>
+                Create Product
+              </button>
+            </Link>
           </div>
         </div>
-      }
-    </div>
-  )
-}
 
-export default Home
+
+        <AnalysisBox
+          fulfilledList={fulfilledList}
+          newOrderlist={newOrderlist}
+          totalOrderList={totalOrderList}
+          orderInTransitList={orderInTransitList}
+          orderDeliveryList={orderDeliveryList}
+        />
+
+        <div className='grid grid-cols-12 mt-[15%] mb-5 ml-7 gap-10'>
+          {/* Line Chart - Daily Sales */}
+          <div className='col-span-6'>
+            <h2 className='font-bold text-lg mb-2'>📈 Daily Sales</h2>
+            <Charts chartData={dailySalesChartData} type="line" />
+          </div>
+
+          {/* Bar Chart - Distribution */}
+          <div className='col-span-6'>
+            <h2 className='font-bold text-lg mb-2'>📊 Order Status Distribution</h2>
+            <Charts chartData={orderDistributionChartData} type="pie" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Home;

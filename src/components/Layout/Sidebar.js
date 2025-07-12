@@ -50,7 +50,7 @@ export function Sidebar() {
   }
   const activeClass = "bg-[#11120D] hover:bg-[#FFB200] opacity-[100%] text-white rounded-[7px]";
   return (
-    <Card className={`h-[100vh] hidden lg:flex flex-col lg:static   overflow-y-scroll overflow-x-visible  rounded-none shadow-xl  text-[#11120D] ${open ? 'lg:w-[250px]' : 'w-16'
+    <Card className={`h-[150vh] hidden lg:flex flex-col lg:static   overflow-y-scroll overflow-x-visible  rounded-none shadow-xl  text-[#11120D] ${open ? 'lg:w-[250px]' : 'w-16'
       }`}>
       <Link to="/">
         <div className="flex justify-center items-center">

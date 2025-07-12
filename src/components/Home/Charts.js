@@ -1,27 +1,28 @@
-import React from 'react'
+import React from 'react';
+import { Line, Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
 
-import { Chart as ChartJS, defaults } from "chart.js/auto";
-import { Doughnut } from "react-chartjs-2";
+ChartJS.register(
+	CategoryScale,
+	LinearScale,
+	PointElement,
+	LineElement,
+	BarElement,
+	Title,
+	Tooltip,
+	Legend
+);
 
-const Charts = ({ chartData }) => {
+const Charts = ({ chartData, type = "line" }) => {
 	return (
-		<div className='bg-white shadow-lg m-5 px-3 rounded-md py-2 flex justify-center items-center flex-col'>
-			<h1 className='font-[GilroyBold] text-xl'> Analysis </h1>
-			<div>
-				<Doughnut
-					data={chartData}
-					options={{
-						plugins: {
-							title: {
-								display: true,
-								text: "Order Status Breakdown",
-							},
-						},
-					}}
-				/>
-			</div>
+		<div className='bg-white p-4 rounded-lg shadow-lg'>
+			{type === 'bar' ? (
+				<Bar data={chartData} options={{ responsive: true }} />
+			) : (
+				<Line data={chartData} options={{ responsive: true }} />
+			)}
 		</div>
-	)
-}
+	);
+};
 
-export default Charts
+export default Charts;
