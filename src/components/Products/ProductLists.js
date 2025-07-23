@@ -57,7 +57,7 @@ const ProductLists = ({ productList, deleteOrder, handleStatusChange, filterBySe
 							</div>
 							{/* <p className='col-span-1 font-[GilroyMedium]' >Order ID</p> */}
 							<p className='col-span-1 font-[GilroyMedium]' >{item?.productCategory}</p>
-							<p className='col-span-1 font-[GilroyMedium]' >{item?.productPrice} </p>
+							<p className='col-span-1 font-[GilroyMedium]' >{item?.productData?.productPrice} </p>
 							<p className='col-span-1 font-[GilroyMedium]' >{item?.productQuantity}</p>
 							<p className='col-span-1 font-[GilroyMedium]' >{item?.productType}</p>
 

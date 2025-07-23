@@ -6,11 +6,14 @@ const TabUser = ({ activeTab, setActiveTab }) => {
 	return (
 		<div className='mt-3 border-[1px] border-gray-200  bg-white py-6 px-12 ' >
 			<div className='flex items-center gap-12 justify-start' >
-				<div onClick={() => setActiveTab("Client")} className={activeTab === "Client" ? activeClass : inActiveClass} >
-					<p>Client</p>
+				<div onClick={() => setActiveTab("admin")} className={activeTab === "admin" ? activeClass : inActiveClass} >
+					<p>Admin</p>
 				</div>
-				<div onClick={() => setActiveTab("Staff")} className={activeTab === "Staff" ? activeClass : inActiveClass} >
+				<div onClick={() => setActiveTab("staff")} className={activeTab === "staff" ? activeClass : inActiveClass} >
 					<p>Staff</p>
+				</div>
+				<div onClick={() => setActiveTab("Customer")} className={activeTab === "Customer" ? activeClass : inActiveClass} >
+					<p>Customer</p>
 				</div>
 			</div>
 		</div>

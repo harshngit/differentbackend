@@ -4,6 +4,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ImageUploading from "react-images-uploading";
 import Variation from "./Variation";
+import ProductData from "./ProductData";
 
 const ProductForm = ({
 	setSizeInput,
@@ -52,6 +53,11 @@ const ProductForm = ({
 	setproductColor,
 	productColor,
 	uploadingVideo,
+	handleProductdata,
+	productDataNew,
+	setproductDataNew,
+	productData,
+	setProductData,
 }) => {
 	return (
 		<div className="bg-[#fff] my-6 mx-6 rounded-lg py-5 px-5 h-[90vh] overflow-y-scroll">
@@ -75,7 +81,8 @@ const ProductForm = ({
 				</div>
 			</div>
 			<div className="flex gap-5 mb-5 mt-5">
-				<div className="w-[40%]">
+				{/* Name */}
+				<div className="w-[100%]">
 					<Input
 						label="Product Name"
 						value={productName}
@@ -84,7 +91,7 @@ const ProductForm = ({
 					/>
 				</div>
 
-				<div className="w-[40%]">
+				{/* <div className="w-[40%]">
 					<Input
 						type="number"
 						label="Product Inventory"
@@ -101,10 +108,16 @@ const ProductForm = ({
 						onChange={(e) => setproductColor(e.target.value)}
 						placeholder="Enter Product Color"
 					/>
-				</div>
-
+				</div> */}
 			</div>
-			<div className="flex gap-5 mb-5 mt-5">
+			<ProductData
+				productDataNew={productDataNew}
+				setproductDataNew={setproductDataNew}
+				productData={productData}
+				setProductData={setProductData}
+				handleProductdata={handleProductdata}
+			/>
+			{/* <div className="flex gap-5 mb-5 mt-5">
 				<div className="w-1/2">
 					<Input
 						type="number"
@@ -114,7 +127,6 @@ const ProductForm = ({
 						placeholder="Enter Product Price"
 					/>
 				</div>
-
 				<div className="w-1/2">
 					<div className="flex gap-2 mb-2">
 						<Input
@@ -138,7 +150,7 @@ const ProductForm = ({
 						</Button>
 					</div>
 
-					{/* Show Added Sizes */}
+				
 					<div className="flex flex-wrap gap-2">
 						{productSize.map((size, index) => (
 							<div
@@ -160,7 +172,7 @@ const ProductForm = ({
 						))}
 					</div>
 				</div>
-			</div>
+			</div> */}
 
 
 			<label className="font-medium text-[1rem] mb-8">Product Description</label>

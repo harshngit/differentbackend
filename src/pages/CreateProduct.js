@@ -13,13 +13,12 @@ const CreateProduct = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
+	// Product main info
 	const [productName, setProductName] = useState("");
-	const [sizeInput, setSizeInput] = useState('');
 	const [productSkuDetails, setProductSkuDetails] = useState("manual");
 	const [productSku, setProductSku] = useState("");
 	const [productImg, setProductImg] = useState([]);
-	const [loading, setLoading] = useState(false);
-	const [productColor, setproductColor] = useState("")
+	const [productVideo, setProductVideo] = useState("");
 	const [productDescription, setProductDescription] = useState("");
 	const [productMaterial, setProductMaterial] = useState("");
 	const [productDeliveryPayment, setProductDeliveryPayment] = useState("");
@@ -27,9 +26,15 @@ const CreateProduct = () => {
 	const [productMetaDescription, setProductMetaDescription] = useState("");
 	const [productCategory, setProductCategory] = useState("");
 	const [productType, setProductType] = useState("");
+	const [productColor, setproductColor] = useState("");
 	const [productPrice, setProductPrice] = useState("");
 	const [productSize, setProductSize] = useState([]);
 	const [productQuantity, setproductQuantity] = useState("");
+	const [uploading, setUploading] = useState(false);
+	const [uploadingVideo, setuploadingVideo] = useState(false);
+	const [loading, setLoading] = useState(false);
+
+	// Variants and combinations
 	const [variationData, setvariationData] = useState({
 		size: [],
 		color: "",
@@ -38,17 +43,24 @@ const CreateProduct = () => {
 		img: "",
 		status: "Available"
 	});
-	const [uploading, setUploading] = useState(false);
 	const [variation, setVariation] = useState([]);
-	const [productVideo, setProductVideo] = useState("");
-	const [uploadingVideo, setuploadingVideo] = useState(false)
+
+	const [productDataNew, setproductDataNew] = useState({
+		productSize: "",
+		productColor: "",
+		productPrice: "",
+		productInventory: "",
+		InventoryStatus: "Available"
+	});
+	const [productData, setProductData] = useState([]);
+	const [sizeInput, setSizeInput] = useState("");
 
 	const addProductVideo = (e) => {
 		e.preventDefault();
 		const file = e.target[0]?.files[0];
 		if (!file) return;
 
-		setUploading(true);
+		setuploadingVideo(true);
 		const storeRef = storageRef(storage, `productVideos/${file.name}`);
 		const uploadTask = uploadBytesResumable(storeRef, file);
 
@@ -57,13 +69,42 @@ const CreateProduct = () => {
 			null,
 			(error) => {
 				alert("Video upload error: " + error);
-				setUploading(false);
+				setuploadingVideo(false);
 			},
 			() => {
 				getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
 					setProductVideo(downloadURL);
 					setuploadingVideo(false);
-					toast.success("Video Uploaded")
+					toast.success("Video Uploaded");
+				});
+			}
+		);
+	};
+
+	const addImageVariant = (e) => {
+		e.preventDefault();
+		const file = e.target[0]?.files[0];
+		if (!file) return;
+
+		setUploading(true);
+		const storeRef = storageRef(storage, `imagevariant/${file.name}`);
+		const uploadTask = uploadBytesResumable(storeRef, file);
+
+		uploadTask.on(
+			"state_changed",
+			null,
+			(error) => {
+				alert("Image upload error: " + error);
+				setUploading(false);
+			},
+			() => {
+				getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+					setvariationData(prev => ({
+						...prev,
+						img: downloadURL
+					}));
+					setUploading(false);
+					toast.success("Image Uploaded");
 				});
 			}
 		);
@@ -88,28 +129,41 @@ const CreateProduct = () => {
 		});
 	};
 
+	const handleProductdata = () => {
+		setProductData([...productData, {
+			productSize: productDataNew.productSize,
+			productColor: productDataNew.productColor,
+			productPrice: productDataNew.productPrice,
+			productInventory: productDataNew.productInventory,
+			InventoryStatus: "Available"
+		}]);
+		setproductDataNew({
+			productSize: "",
+			productColor: "",
+			productPrice: "",
+			productInventory: "",
+			InventoryStatus: "Available"
+		});
+	};
+
 	const handleProduct = async () => {
 		setLoading(true);
 
-		if (!productName.trim()) return toast.error("Please fill Product Name") || setLoading(false);
-		if (productImg.length === 0) return toast.error("Please Upload Image") || setLoading(false);
-		if (!productDescription.trim()) return toast.error("Please fill Product Description") || setLoading(false);
-		if (!productMetaTitle.trim()) return toast.error("Please fill Product Meta Title") || setLoading(false);
-		if (!productMetaDescription.trim()) return toast.error("Please fill Product Meta Description") || setLoading(false);
-		if (!productCategory.trim()) return toast.error("Please fill Product Category") || setLoading(false);
-		if (!productType.trim()) return toast.error("Please fill Product Type") || setLoading(false);
-		if (!productPrice.trim()) return toast.error("Please fill Product Price") || setLoading(false);
-		if (productSize.length === 0) return toast.error("Please add at least one product size") || setLoading(false);
-		if (!productMaterial.trim()) return toast.error("Please fill Product Material") || setLoading(false);
-		if (!productDeliveryPayment.trim()) return toast.error("Please fill Product Delivery Payment") || setLoading(false);
-		if (!productQuantity.trim()) return toast.error("Please fill Product Quantity") || setLoading(false);
+		if (!productName.trim()) return toast.error("Please fill Product Name") && setLoading(false);
+		if (productData.length === 0) return toast.error("Please Fill product Data") && setLoading(false);
+		if (productImg.length === 0) return toast.error("Please Upload Image") && setLoading(false);
+		if (!productDescription.trim()) return toast.error("Please fill Product Description") && setLoading(false);
+		if (!productMetaTitle.trim()) return toast.error("Please fill Product Meta Title") && setLoading(false);
+		if (!productMetaDescription.trim()) return toast.error("Please fill Product Meta Description") && setLoading(false);
+		if (!productCategory.trim()) return toast.error("Please fill Product Category") && setLoading(false);
+		if (!productType.trim()) return toast.error("Please fill Product Type") && setLoading(false);
+		if (!productMaterial.trim()) return toast.error("Please fill Product Material") && setLoading(false);
+		if (!productDeliveryPayment.trim()) return toast.error("Please fill Product Delivery Payment") && setLoading(false);
 
 		const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
 		const randomSuffix = Math.floor(10000 + Math.random() * 90000);
 		const productID = `${dateStr}${randomSuffix}`;
-
 		const sku = `SKU-${productID}`;
-		const date = new Date();
 		const uploadedImageUrls = [];
 
 		for (let i = 0; i < productImg.length; i++) {
@@ -120,67 +174,41 @@ const CreateProduct = () => {
 			uploadedImageUrls.push(downloadURL);
 		}
 
-		const productData = {
-			createdAtDate: date,
+		const productPayload = {
+			createdAtDate: new Date(),
 			productSku: (productSkuDetails === "automatic") ? sku : productSku,
 			productName,
 			productInventoryStatus: "Available",
 			productStatus: "Active",
 			productImages: uploadedImageUrls,
 			productDescription,
+			productData: productData,
 			productMaterial,
 			productDeliveryPayment,
 			productMetaTitle,
-			productPrice,
-			productColor,
-			productSize,
-			productVideo,
-			productQuantity,
 			productMetaDescription,
 			productCategory,
 			productType,
-			variation,
+			productPrice,
+			productColor,
+			productSize,
+			productQuantity,
+			productVideo,
+			variation
 		};
 
-		await setDoc(doc(db, "Product", productID), productData);
+		await setDoc(doc(db, "Product", productID), productPayload);
 
 		toast.success("Product added successfully!");
-		setTimeout(() => {
-			navigate("/products");
-		}, 1000);
+		setTimeout(() => navigate("/products"), 1000);
 		setLoading(false);
 	};
 
-	const addImageVariant = (e) => {
-		e.preventDefault();
-		const file = e.target[0]?.files[0];
-		if (!file) return;
-		setUploading(true);
-		const storeRef = storageRef(storage, `imagevariant/${file.name}`);
-		const uploadTask = uploadBytesResumable(storeRef, file);
-
-		uploadTask.on(
-			"state_changed",
-			null,
-			(error) => alert(error),
-			() => {
-				getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-					setvariationData(prev => ({
-						...prev,
-						img: downloadURL
-					}));
-					setUploading(false);
-					toast.success("Image Uploaded")
-				});
-			}
-		);
-	};
-
 	return (
-		<div className='bg-gray-100 flex'>
+		<div className="bg-gray-100 flex">
 			<Toaster />
 			<Sidebar />
-			<div className='h-[100vh] overflow-y-scroll flex flex-1 flex-col'>
+			<div className="h-[100vh] overflow-y-scroll flex flex-1 flex-col">
 				<Topbar />
 				<ProductForm
 					setproductColor={setproductColor}
@@ -229,6 +257,11 @@ const CreateProduct = () => {
 					setProductType={setProductType}
 					handleProduct={handleProduct}
 					uploadingVideo={uploadingVideo}
+					handleProductdata={handleProductdata}
+					productDataNew={productDataNew}
+					setproductDataNew={setproductDataNew}
+					productData={productData}
+					setProductData={setProductData}
 				/>
 			</div>
 		</div>

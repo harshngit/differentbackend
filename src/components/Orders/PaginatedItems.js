@@ -73,10 +73,12 @@ const PaginatedItems = ({ itemsPerPage, filteredOrderList, showAdd, setShowAdd, 
 
             <p className='col-span-1 uppercase text-[0.7rem] font-[GilroyMedium]' >{item?.orderStatus}</p>
             <div className='flex items-start justify-start ' >
-              {item?.orderStatus === "new" && <Button onClick={() => {
-                setOrderID(item?.id)
-                handlePartnerModal()
-              }} className='col-span-1 text-[.7rem] font-[GilroyMedium]' >Ship Now</Button>}
+              {item?.orderStatus === "New" && <Button
+                // onClick={() => {
+                //   setOrderID(item?.id)
+                //   handlePartnerModal()
+                // }} 
+                className='col-span-1 text-[.7rem] font-[GilroyMedium]' >Ship Now</Button>}
               {/* {userProfile?.role === "admin" && <div onClick={() => {
                 deleteOrder(item?.id)
               }} className='col-span-1 text-red-600 cursor-pointer w-[3rem] mx-2 font-[GilroyMedium]' ><TrashIcon /></div>} */}
